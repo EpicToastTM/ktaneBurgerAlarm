@@ -62,6 +62,7 @@ public class burgerAlarmScript : MonoBehaviour
 
     private readonly int[] rows = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
     private readonly int[] cols = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    private bool isActivated;
 
     private void Start()
     {
@@ -70,14 +71,10 @@ public class burgerAlarmScript : MonoBehaviour
             textureTransforms[i].gameObject.SetActive(false);
         x.SetActive(false);
         check.SetActive(false);
-        Module.OnActivate += SetUpButtons;
-    }
-
-    private void SetUpButtons()
-    {
+        Module.OnActivate += Activate;
         order.OnInteract += delegate ()
         {
-            if (!solved && !cooldown)
+            if (!solved && !cooldown && isActivated)
                 Order();
             order.AddInteractionPunch();
             Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, order.transform);
@@ -86,7 +83,7 @@ public class burgerAlarmScript : MonoBehaviour
 
         submit.OnInteract += delegate ()
         {
-            if (!solved && !cooldown)
+            if (!solved && !cooldown && isActivated)
                 Submit();
             submit.AddInteractionPunch(10);
             Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, submit.transform);
@@ -99,7 +96,7 @@ public class burgerAlarmScript : MonoBehaviour
 
             btns[i].OnInteract += delegate ()
             {
-                if (!solved && !cooldown)
+                if (!solved && !cooldown && isActivated)
                     BtnPress(j);
                 btns[j].AddInteractionPunch();
                 Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, btns[j].transform);
@@ -108,11 +105,14 @@ public class burgerAlarmScript : MonoBehaviour
         }
 
         for (int i = 0; i < 10; i++)
-        {
             textureTransforms[i].gameObject.SetActive(true);
-        }
         x.SetActive(true);
         check.SetActive(true);
+    }
+
+    private void Activate()
+    {
+        isActivated = true;
         GenerateModule();
     }
 
