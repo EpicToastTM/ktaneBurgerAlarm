@@ -772,6 +772,8 @@ public class burgerAlarmScript : MonoBehaviour
 
     private IEnumerator TwitchHandleForcedSolve()
     {
+        while (!isActivated)
+            yield return true;
         if (!currentlyOrdering)
             order.OnInteract();
         while (cooldown) { yield return null; }
