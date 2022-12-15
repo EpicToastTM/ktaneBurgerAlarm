@@ -5,8 +5,10 @@ using System.Linq;
 using KModkit;
 using System;
 using Random = UnityEngine.Random;
+using System.Text.RegularExpressions;
 
-public class burgerAlarmScript : MonoBehaviour {
+public class burgerAlarmScript : MonoBehaviour
+{
 
     public KMBombModule Module;
     public KMBombInfo Info;
@@ -22,12 +24,12 @@ public class burgerAlarmScript : MonoBehaviour {
     private bool solved;
 
     private int[] buttonSymbols = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }; // Which symbol is on [BUTTON #]?
-    private int[] symbolPositions = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }; // Which button is [SYMBOL #] on?
+    private readonly int[] symbolPositions = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }; // Which button is [SYMBOL #] on?
     private static readonly string[] symbolNames = { "mayo", "bun", "tomato", "cheese", "lettuce", "onions", "pickles", "mustard", "ketchup", "meat" };
     //                                                 0       1      2         3         4          5         6          7          8          9
-    private int[] number = { 10, 10, 10, 10, 10, 10, 10 };
+    private readonly int[] number = { 10, 10, 10, 10, 10, 10, 10 };
 
-    private int[,] table =
+    private static readonly int[,] table =
     {
         { 0, 6, 3, 4, 8, 5, 0, 6, 5, 5 },
         { 5, 1, 0, 6, 8, 1, 7, 7, 5, 6 },
@@ -44,35 +46,34 @@ public class burgerAlarmScript : MonoBehaviour {
     private static readonly string[] primes = { "2", "3", "5", "7" };
     private bool currentlyOrdering = false, finishedIncreasing = false;
 
-    private int[] rowOrders = { 0, 0, 0, 0, 0 };
-    private int[] colOrders = { 0, 0, 0, 0, 0 };
+    private readonly int[] rowOrders = { 0, 0, 0, 0, 0 };
+    private readonly int[] colOrders = { 0, 0, 0, 0, 0 };
 
-    private string[] orderStrings = { "", "", "", "", "" };
+    private readonly string[] orderStrings = { "", "", "", "", "" };
     private int shownOrder = 0;
-    private int[] btnsToPress = { 1, 0, 0, 0, 0, 0, 1 };
+    private readonly int[] btnsToPress = { 1, 0, 0, 0, 0, 0, 1 };
     private int btnsPressed = 0;
     private bool sequenceCorrect = true;
     private bool cooldown = false;
-    private string[] reasonsForStrike = { "", "", "", "", "", "", "" };
+    private readonly string[] reasonsForStrike = { "", "", "", "", "", "", "" };
     private Coroutine time;
 
-    private int[] swaps = { 10, 10, 10, 10, 10, 10, 10, 10 };
+    private readonly int[] swaps = { 10, 10, 10, 10, 10, 10, 10, 10 };
 
-    int[] rows = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-    int[] cols = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    private readonly int[] rows = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    private readonly int[] cols = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-    void Start () {
+    private void Start()
+    {
         _moduleId = _moduleIdCounter++;
         for (int i = 0; i < 10; i++)
-        {
             textureTransforms[i].gameObject.SetActive(false);
-        }
         x.SetActive(false);
         check.SetActive(false);
         Module.OnActivate += SetUpButtons;
     }
 
-    void SetUpButtons()
+    private void SetUpButtons()
     {
         order.OnInteract += delegate ()
         {
@@ -115,7 +116,7 @@ public class burgerAlarmScript : MonoBehaviour {
         GenerateModule();
     }
 
-    void GenerateModule()
+    private void GenerateModule()
     {
         string[] modules = Info.GetModuleNames().ToArray();
 
@@ -130,8 +131,7 @@ public class burgerAlarmScript : MonoBehaviour {
 
         for (int i = 0; i < 10; i++)
         {
-            DebugMsg("Button #" + (i + 1) + " has " + symbolNames[buttonSymbols[i]] + " on it.");
-
+            Debug.LogFormat("[Burger Alarm #{0}] Button #{1} has {2} on it.", _moduleId, i + 1, symbolNames[buttonSymbols[i]]);
             symbolPositions[buttonSymbols[i]] = i;
         }
 
@@ -142,7 +142,7 @@ public class burgerAlarmScript : MonoBehaviour {
         var tableOffsets = new int[8];
 
         // Number #1...
-        
+
         if (primes.Contains(Info.GetSerialNumber()[5].ToString()))
         {
             if (buttonSymbols[3] == 8 || buttonSymbols[4] == 8 || buttonSymbols[5] == 8)
@@ -174,7 +174,7 @@ public class burgerAlarmScript : MonoBehaviour {
 
         else
         {
-            if (symbolPositions[2] % 3 == symbolPositions[1] % 3 && symbolPositions[2] != 9 && symbolPositions[1] != 9) 
+            if (symbolPositions[2] % 3 == symbolPositions[1] % 3 && symbolPositions[2] != 9 && symbolPositions[1] != 9)
                 tableOffsets[1] = 8;
 
             else if ((symbolPositions[1] % 3 == 1 && symbolPositions[2] == 9) || (symbolPositions[2] % 3 == 1 && symbolPositions[1] == 9))
@@ -190,8 +190,8 @@ public class burgerAlarmScript : MonoBehaviour {
         {
             if (symbolPositions[7] != 6 && symbolPositions[7] != 7 && symbolPositions[7] != 8)
                 tableOffsets[2] = 5;
-                             
-            else             
+
+            else
                 tableOffsets[2] = 9;
         }
 
@@ -277,7 +277,7 @@ public class burgerAlarmScript : MonoBehaviour {
 
         else
         {
-            if (symbolPositions[8] / 3 < symbolPositions[1] / 3) 
+            if (symbolPositions[8] / 3 < symbolPositions[1] / 3)
                 tableOffsets[6] = 3;
 
             else
@@ -288,7 +288,9 @@ public class burgerAlarmScript : MonoBehaviour {
 
         if (modules.Contains("Ice Cream") || modules.Contains("Cooking") || modules.Contains("Cookie Jars") || modules.Contains("Pie"))
         {
-            if (symbolPositions[7] % 3 < symbolPositions[9] % 3 || (symbolPositions[7] % 3 == 0 && symbolPositions[9] == 9))
+            if ((symbolPositions[7] % 3 < symbolPositions[9] % 3 && symbolPositions[7] != 9 && symbolPositions[9] != 9) ||
+                (symbolPositions[7] % 3 == 0 && symbolPositions[9] == 9) ||
+                (symbolPositions[9] % 3 == 2 && symbolPositions[7] == 9))
                 tableOffsets[7] = 1;
 
             else
@@ -343,8 +345,8 @@ public class burgerAlarmScript : MonoBehaviour {
                     }
                 }
             }
-            
-            DebugMsg("The answer from Table #" + (i + 1) + " was " + tableOffsets[i] + ".");
+
+            Debug.LogFormat("[Burger Alarm #{0}] The answer from Table #{1} was {2}.", _moduleId, i + 1, tableOffsets[i]);
         }
 
         for (int i = 0; i < 7; i++)
@@ -356,7 +358,7 @@ public class burgerAlarmScript : MonoBehaviour {
 
         swaps[7] = (tableOffsets[7] + number[0] + number[1] + number[2] + number[3] + number[4] + number[5] + number[6]) % 10;
 
-        DebugMsg("The number on the module is " + numberText.text);
+        Debug.LogFormat("[Burger Alarm #{0}] The number on the module is {1}.", _moduleId, numberText.text);
 
         // Mess with table
 
@@ -364,24 +366,24 @@ public class burgerAlarmScript : MonoBehaviour {
 
         rows[swaps[0]] = swaps[1];
         rows[swaps[1]] = swaps[0];
-        DebugMsg("Swapping rows " + swaps[0] + " and " + swaps[1] + ".");
+        Debug.LogFormat("[Burger Alarm #{0}] Swapping rows {1} and {2}.", _moduleId, swaps[0], swaps[1]);
 
         cols[swaps[2]] = swaps[3];
         cols[swaps[3]] = swaps[2];
-        DebugMsg("Swapping columns " + swaps[2] + " and " + swaps[3] + ".");
+        Debug.LogFormat("[Burger Alarm #{0}] Swapping columns {1} and {2}.", _moduleId, swaps[2], swaps[3]);
 
         swappedThing = rows[swaps[4]];
         rows[swaps[4]] = rows[swaps[5]];
         rows[swaps[5]] = swappedThing;
-        DebugMsg("Swapping rows " + swaps[4] + " and " + swaps[5] + ".");
+        Debug.LogFormat("[Burger Alarm #{0}] Swapping rows {1} and {2}.", _moduleId, swaps[4], swaps[5]);
 
         swappedThing = cols[swaps[6]];
         cols[swaps[6]] = cols[swaps[7]];
         cols[swaps[7]] = swappedThing;
-        DebugMsg("Swapping columns " + swaps[6] + " and " + swaps[7] + ".");
+        Debug.LogFormat("[Burger Alarm #{0}] Swapping columns {1} and {2}.", _moduleId, swaps[6], swaps[7]);
     }
 
-    void Order()
+    private void Order()
     {
         if (!currentlyOrdering)
         {
@@ -389,12 +391,12 @@ public class burgerAlarmScript : MonoBehaviour {
             finishedIncreasing = false;
             cooldown = true;
 
-            DebugMsg("You pressed order!");
+            Debug.LogFormat("[Burger Alarm #{0}] You pressed order!", _moduleId);
 
             time = StartCoroutine(Timer());
 
             // Generate order
-            
+
             for (int i = 0; i < 5; i++)
             {
                 rowOrders[i] = Random.Range(0, 10);
@@ -403,12 +405,12 @@ public class burgerAlarmScript : MonoBehaviour {
                 btnsToPress[i + 1] = table[rows[rowOrders[i]], cols[colOrders[i]]];
                 orderStrings[i] = "no.    " + rowOrders[i] + colOrders[i];
 
-                DebugMsg("Order #" + (i + 1) + " is " + orderStrings[i].Replace("    ", " ") + ".");
-                DebugMsg("That means you should press " + symbolNames[btnsToPress[i + 1]] + ".");
+                Debug.LogFormat("[Burger Alarm #{0}] Order #{1} is {2}.", _moduleId, i + 1, orderStrings[i].Replace("    ", " "));
+                Debug.LogFormat("[Burger Alarm #{0}] That means yo should press {1}.", _moduleId, symbolNames[btnsToPress[i + 1]]);
             }
-            
+
             sequenceCorrect = true;
-            
+
             for (int i = 0; i < 7; i++)
             {
                 reasonsForStrike[i] = "";
@@ -421,19 +423,16 @@ public class burgerAlarmScript : MonoBehaviour {
         }
     }
 
-    void Submit()
+    private void Submit()
     {
-        DebugMsg("You pressed submit!");
+        Debug.LogFormat("[Burger Alarm #{0}] You pressed submit!", _moduleId);
 
         if (!currentlyOrdering)
         {
             Module.HandleStrike();
-
-            DebugMsg("That ain't right, because...");
-
-            DebugMsg("Nobody even ordered anything.");
-
-            DebugMsg("STRIKE!!!");
+            Debug.LogFormat("[Burger Alarm #{0}] That ain't right, because...", _moduleId);
+            Debug.LogFormat("[Burger Alarm #{0}] Nobody even ordered anything.", _moduleId);
+            Debug.LogFormat("[Burger Alarm #{0}] STRIKE!!!", _moduleId);
             StopAllCoroutines();
             StartCoroutine(StrikeAnimation());
 
@@ -446,20 +445,13 @@ public class burgerAlarmScript : MonoBehaviour {
         else if (btnsPressed < 7)
         {
             Module.HandleStrike();
-
-            DebugMsg("That ain't right, because...");
-
+            Debug.LogFormat("[Burger Alarm #{0}] That ain't right, because...", _moduleId);
             for (int i = 0; i < 7; i++)
-            {
                 if (reasonsForStrike[i] != "")
-                {
-                    DebugMsg(reasonsForStrike[i]);
-                }
-            }
+                    Debug.LogFormat("[Burger Alarm #{0}] {1}", _moduleId, reasonsForStrike[i]);
 
-            DebugMsg("The burger's not big enough. The customer starves to death and you get fired.");
-
-            DebugMsg("STRIKE!!!");
+            Debug.LogFormat("[Burger Alarm #{0}] The burger's not big enough. The customer starves to death and you get fired.", _moduleId);
+            Debug.LogFormat("[Burger Alarm #{0}] STRIKE!!!", _moduleId);
             StopAllCoroutines();
             StartCoroutine(StrikeAnimation());
 
@@ -474,12 +466,12 @@ public class burgerAlarmScript : MonoBehaviour {
             Module.HandlePass();
             solved = true;
 
-            DebugMsg("Looks like that was right. Module solved!");
+            Debug.LogFormat("[Burger Alarm #{0}] Looks like that was right. Module solved!", _moduleId);
 
             numberText.text = "no.    15";
             timerText.text = "GG";
             StopCoroutine(time);
-            StartCoroutine(solveFade());
+            StartCoroutine(SolveFade());
 
             Audio.PlaySoundAtTransform("Solve", Module.transform);
         }
@@ -487,18 +479,12 @@ public class burgerAlarmScript : MonoBehaviour {
         else
         {
             Module.HandleStrike();
-
-            DebugMsg("That ain't right, because...");
-
+            Debug.LogFormat("[Burger Alarm #{0}] That ain't right, because...", _moduleId);
             for (int i = 0; i < 7; i++)
-            {
                 if (reasonsForStrike[i] != "")
-                {
-                    DebugMsg(reasonsForStrike[i]);
-                }
-            }
+                    Debug.LogFormat("[Burger Alarm #{0}] {1}", _moduleId, reasonsForStrike[i]);
 
-            DebugMsg("STRIKE!!!");
+            Debug.LogFormat("[Burger Alarm #{0}] STRIKE!!!", _moduleId);
             StopAllCoroutines();
             StartCoroutine(StrikeAnimation());
 
@@ -512,9 +498,9 @@ public class burgerAlarmScript : MonoBehaviour {
         btnsPressed = 0;
     }
 
-    void BtnPress(int btnNum)
+    private void BtnPress(int btnNum)
     {
-        DebugMsg("You pressed the button with the " + symbolNames[buttonSymbols[btnNum]] + ".");
+        Debug.LogFormat("[Burger Alarm #{0}] You pressed the button with the {1}.", _moduleId, symbolNames[buttonSymbols[btnNum]]);
 
         if (btnsPressed >= 0 && btnsPressed <= 6)
         {
@@ -544,7 +530,7 @@ public class burgerAlarmScript : MonoBehaviour {
         btnsPressed++;
     }
 
-    IEnumerator solveFade()
+    private IEnumerator SolveFade()
     {
         yield return new WaitForSeconds(0.5f);
         float fadeOutTime = 3f;
@@ -556,12 +542,7 @@ public class burgerAlarmScript : MonoBehaviour {
         }
     }
 
-    void DebugMsg(string msg)
-    {
-        Debug.LogFormat("[Burger Alarm #{0}] {1}", _moduleId, msg);
-    }
-
-    int[] FindAdjacentBtns(int symbolNum)
+    private int[] FindAdjacentBtns(int symbolNum)
     {
         int[] adjacentBtns = { 10, 10, 10, 10 };
 
@@ -634,7 +615,7 @@ public class burgerAlarmScript : MonoBehaviour {
         return adjacentBtns;
     }
 
-    IEnumerator Timer()
+    private IEnumerator Timer()
     {
         int time = 0;
         shownOrder = 0;
@@ -661,7 +642,7 @@ public class burgerAlarmScript : MonoBehaviour {
 
             yield return new WaitForSeconds(.005f);
         }
-        
+
         finishedIncreasing = true;
 
         numberText.text = "HURRYUP";
@@ -689,7 +670,7 @@ public class burgerAlarmScript : MonoBehaviour {
             Module.HandleStrike();
             currentlyOrdering = false;
             btnsPressed = 0;
-            DebugMsg("Your customer got impatient and left. STRIKE!!!");
+            Debug.LogFormat("[Burger Alarm #{0}] Your customer got impatient and left. STRIKE!!!", _moduleId);
             StopAllCoroutines();
             StartCoroutine(StrikeAnimation());
 
@@ -700,7 +681,7 @@ public class burgerAlarmScript : MonoBehaviour {
         }
     }
 
-    IEnumerator ChangeOrder()
+    private IEnumerator ChangeOrder()
     {
         numberText.text = "";
 
@@ -710,7 +691,7 @@ public class burgerAlarmScript : MonoBehaviour {
         numberText.text = orderStrings[shownOrder];
     }
 
-    IEnumerator StrikeAnimation()
+    private IEnumerator StrikeAnimation()
     {
         numberText.color = Color.red;
         numberUnderText.color = new Color32(50, 0, 0, 255);
@@ -718,7 +699,7 @@ public class burgerAlarmScript : MonoBehaviour {
         for (int i = 0; i < 100; i++)
         {
             yield return new WaitForSeconds(.01f);
-            
+
             numberText.text = "";
 
             for (int x = 0; x < 7; x++)
@@ -739,8 +720,11 @@ public class burgerAlarmScript : MonoBehaviour {
         timerText.text = "";
     }
 
-    public string TwitchHelpMessage = "Use !{0} order to press the order button, and !{0} submit to press submit. You can do !{0} press mayo bun tomato cheese lettuce onions pickles mustard ketchup meat to press buttons.";
-    IEnumerator ProcessTwitchCommand(string cmd)
+#pragma warning disable 0414
+    private readonly string TwitchHelpMessage = "Use !{0} order to press the order button, and !{0} submit to press submit. You can do !{0} press mayo bun tomato cheese lettuce onions pickles mustard ketchup meat to press buttons.";
+#pragma warning restore 0414
+
+    private IEnumerator ProcessTwitchCommand(string cmd)
     {
         if (currentlyOrdering)
             while (cooldown) { yield return null; }
@@ -748,14 +732,12 @@ public class burgerAlarmScript : MonoBehaviour {
         if (cmd.ToLowerInvariant() == "order")
         {
             yield return null;
-            //DebugMsg("You ordered something.");
             yield return new KMSelectable[] { order };
         }
 
         else if (cmd.ToLowerInvariant() == "submit")
         {
             yield return null;
-            //DebugMsg("You submitted something.");
             yield return new KMSelectable[] { submit };
         }
 
@@ -775,7 +757,6 @@ public class burgerAlarmScript : MonoBehaviour {
             }
 
             yield return null;
-            //DebugMsg("You're pressing something.");
             foreach (var btn in btnSequence)
             {
                 int ingredientNum = Array.IndexOf(symbolNames, btn);
@@ -789,7 +770,7 @@ public class burgerAlarmScript : MonoBehaviour {
         }
     }
 
-    IEnumerator TwitchHandleForcedSolve()
+    private IEnumerator TwitchHandleForcedSolve()
     {
         if (!currentlyOrdering)
             order.OnInteract();
@@ -802,7 +783,7 @@ public class burgerAlarmScript : MonoBehaviour {
             numberText.text = "no.    15";
             timerText.text = "GG";
             StopCoroutine(time);
-            StartCoroutine(solveFade());
+            StartCoroutine(SolveFade());
 
             Audio.PlaySoundAtTransform("Solve", Module.transform);
         }
