@@ -406,7 +406,7 @@ public class burgerAlarmScript : MonoBehaviour
                 orderStrings[i] = "no.    " + rowOrders[i] + colOrders[i];
 
                 Debug.LogFormat("[Burger Alarm #{0}] Order #{1} is {2}.", _moduleId, i + 1, orderStrings[i].Replace("    ", " "));
-                Debug.LogFormat("[Burger Alarm #{0}] That means yo should press {1}.", _moduleId, symbolNames[btnsToPress[i + 1]]);
+                Debug.LogFormat("[Burger Alarm #{0}] That means you should press {1}.", _moduleId, symbolNames[btnsToPress[i + 1]]);
             }
 
             sequenceCorrect = true;
