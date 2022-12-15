@@ -2707,7 +2707,6 @@ MonoBehaviour:
   - {fileID: 114630522768851106}
   - {fileID: 114397374230076074}
   - {fileID: 114480570470212288}
-  - {fileID: 0}
   IsPassThrough: 0
   ChildRowLength: 3
   Highlight: {fileID: 114342421082836950}

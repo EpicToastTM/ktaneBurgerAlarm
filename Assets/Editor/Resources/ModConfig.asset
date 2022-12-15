@@ -11,10 +11,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 615501dbe4f3fe94fbf4b564abb10237, type: 3}
   m_Name: ModConfig
   m_EditorClassIdentifier: 
-  id: Module
-  title: Module
-  author: Author
-  description: Module description
+  id: burgerAlarm
+  title: Burger Alarm
+  author: EpicToast
+  description: "The last thing you'd want in your Burger King burger is somebody's
+    time bomb, but as it turns out, that might be what you get.\r\n\r\nOriginal module
+    by Marksam32. Concept by willycel123. Everything else by me.\r\n\r\nThis is a
+    reupload of EpicToast's module with changes and bug fixes. Unsubscribe from the
+    old version here: https://steamcommunity.com/sharedfiles/filedetails/?id=1660329102\r\n\r\n[url=https://ktane.timwi.de/HTML/Burger%20Alarm.html]Manual
+    HTML[/url]\r\n[url=https://ktane.timwi.de/PDF/Burger%20Alarm.pdf]Manual PDF[/url]"
   version: 1.0
   outputFolder: build
-  previewImage: {fileID: 2800000, guid: bd5c1f4881f57d54481b44e4c8a7779a, type: 3}
+  previewImage: {fileID: 2800000, guid: 4501e6d8803d9c7478edcd7a77326a8a, type: 3}
